@@ -9,15 +9,8 @@ source("./read_data.R")
 USG_USERS = c("agency only", "interagency only", "global agency", "global only")
 PARTNER_USERS = c("global partner", "partner only")
 
-# ui -----
-ui <- shinyUI(
-  uiOutput("ui")
-)
-
 # server ----
 server <- function(input, output, session) {
-  
-  print(Sys.getenv("BASE_URL"))
   
   # user information
   user_input  <-  reactiveValues(authenticated = FALSE,
@@ -215,8 +208,6 @@ server <- function(input, output, session) {
   # show mechs by cocuid ----
   observeEvent(input$mech_cocuid_button, {
     
-    print(mechanisms$my_cat_ops)
-    
     # display mechanisms  
     output$table <- renderDataTable(mechanisms$my_cat_ops[,c("combo_id", "name")],
                                     options = list(
@@ -291,5 +282,3 @@ server <- function(input, output, session) {
     session$reload()
   })
 }
-shinyApp(ui, server)
-
