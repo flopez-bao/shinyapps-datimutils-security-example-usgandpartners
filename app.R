@@ -124,9 +124,9 @@ server <- function(input, output, session) {
       # DISALLOW USER ACCESS TO THE APP-----
       
       # access data streams and classify a user and pull mechs
-      s <- getStreams(username = input$user_name, password = input$password, base_url = Sys.getenv("BASE_URL"))
-      u <- getUserType(s$stream)
-      my_cat_ops <- getMechs(username = input$user_name, password = input$password, base_url = Sys.getenv("BASE_URL"))
+      s <- datimutils::getMyStreams()
+      u <- datimutils::getMyUserType()
+      my_cat_ops <- datimutils::listMechs()
       
       # store data so call is made only once
       user$type <- u
@@ -204,9 +204,8 @@ server <- function(input, output, session) {
   
   # show streams ids data ----
   observeEvent(input$groupid_button, {
-    
     groups_id_df <- userGroups$streams
-    groups_id_df_f <- groups_id_df[!grepl("^Global|OU", groups_id_df$stream),,drop = F]
+    groups_id_df_f <- groups_id_df[!grepl("^Global|OU", groups_id_df)]
     
     # display streams
     output$message <- renderPrint({ groups_id_df_f })
@@ -217,8 +216,10 @@ server <- function(input, output, session) {
   # show mechs by cocuid ----
   observeEvent(input$mech_cocuid_button, {
     
+    print(mechanisms$my_cat_ops)
+    
     # display mechanisms  
-    output$table <- renderDataTable(mechanisms$my_cat_ops[,c("category_option_combos_id", "name")],
+    output$table <- renderDataTable(mechanisms$my_cat_ops[,c("combo_id", "name")],
                                     options = list(
                                       pageLength = 10
                                     )
