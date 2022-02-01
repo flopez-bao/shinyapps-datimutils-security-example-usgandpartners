@@ -3,7 +3,6 @@ library(shiny)
 library(futile.logger)
 library(shinyWidgets)
 
-source("./functions.R")
 source("./read_data.R")
 
 # which users should have access to data? IN THIS CASE ONLY PARTNERS - USG FOLKS SEE EVERYTHING, PARTNERS LIMITED TO MECH ACCESS
