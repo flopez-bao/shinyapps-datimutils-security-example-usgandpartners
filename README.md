@@ -1,4 +1,4 @@
-The following example app was built to demonstrate the use of functionality in datimutils for securing data access. In order to run this application do the following:
+The following example app was built to demonstrate the use of functionality in datimutils for securing data access specifically for data meant to be accessible to USG Folks and Partners. In order to run this application do the following:
 
 1. Clone the repo.
 2. Open as a project.
