@@ -263,8 +263,8 @@
       "RemoteRepo": "datimutils",
       "RemoteUsername": "pepfar-datim",
       "RemoteRef": "adp-1425",
-      "RemoteSha": "30b80a58404b8449ac4c40b6a7b2d5f944dba4a1",
-      "Hash": "a718869ca3aa18a6c06eaa4ff1095715"
+      "RemoteSha": "97915ac3ac95c3d9787a586ce5b800d3f84df037",
+      "Hash": "54172a4dd281edc46b0c51552ce64568"
     },
     "desc": {
       "Package": "desc",
