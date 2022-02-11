@@ -164,7 +164,7 @@ server <- function(input, output, session) {
   
   # logout process ----
   observeEvent(input$logout_button, {
-    req(input$logout)
+    req(input$logout_button)
     # Gets you back to the login without the authorization code at top
     updateQueryString("?",mode="replace",session=session) 
     flog.info(paste0("User ", user_input$d2_session$me$userCredentials$username, " logged out."))
