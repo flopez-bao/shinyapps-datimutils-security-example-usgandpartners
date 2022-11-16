@@ -31,7 +31,7 @@ if (interactive()) {
   # OR this line can be added to .Rprofile.
   # This is not an issue when using a single file version of shiny, ie app.R
   # The order by which the files execute is the reasoning behind this.
-  # options(shiny.port = 3123)
+  options(shiny.port = 3123)
   # # testing url
   APP_URL <- "http://127.0.0.1:3123/"# This will be your local host path
 } else {
