@@ -23,7 +23,7 @@ jscode_login <- '$(document).keyup(function(e) {
 
 ### Initiate logging
 logger <- flog.logger()
-flog.appender(appender.console(), name = "datimutils")
+flog.appender(appender.console(), name = "usgpartners")
 
 ### OAuth Client information
 if (interactive()) {
@@ -53,7 +53,6 @@ oauth_api <- httr::oauth_endpoint(base_url = paste0(Sys.getenv("BASE_URL"), "uaa
 
 oauth_scope <- "ALL"
 
-
 has_auth_code <- function(params) {
   
   return(!is.null(params$code))
@@ -75,7 +74,7 @@ server <- function(input, output, session) {
                                  memo_authorized = FALSE)
   
   # logout process ----
-  observeEvent(input$logout_button, {
+  observeEvent(input$logout, {
     req(input$logout)
     # Returns to the log in screen without the authorization code at top
     updateQueryString("?", mode = "replace", session = session)
@@ -90,7 +89,6 @@ server <- function(input, output, session) {
     session$reload()
   })
   
-  
   # is the user authenticated?
   output$ui <- renderUI({
     if(user_input$authenticated == FALSE) {
@@ -99,8 +97,6 @@ server <- function(input, output, session) {
       uiOutput("authenticated")
     }
   })
-  
-  
   
   # login page with username and password
   output$uiLogin  <-  renderUI({
@@ -156,8 +152,6 @@ server <- function(input, output, session) {
           width = 6
         ),
         column(
-          # actionButton("logout_button", "Log out of Session", style="color: #fff; background-color: #FF0000; border-color: #2e6da4"),
-          # width = 6,
           actionButton("logout",
                        "Return to Login Page",
                        icon = icon("sign-out")),
@@ -182,9 +176,6 @@ server <- function(input, output, session) {
     )  
   })
   
-  
-  
-  
   #UI that will display when redirected to OAuth login agent
   output$ui_redirect <- renderUI({
     #print(input$login_button_oauth) useful for debugging
@@ -197,21 +188,10 @@ server <- function(input, output, session) {
     } else NULL
   })
   
-  
-  
-  
-  
-  
-  
   # User and mechanisms reactive value pulled only once ----
   user <- reactiveValues(type = NULL)
   mechanisms <- reactiveValues(my_cat_ops = NULL)
   userGroups <- reactiveValues(streams = NULL)
-  
-  
-  
-  
-  
   
   ### Login Button oauth Checks
   observeEvent(input$login_button_oauth > 0, {
@@ -279,7 +259,7 @@ server <- function(input, output, session) {
               },
       # This function throws an error if the login is not successful
       error = function(e) {
-        flog.info(paste0("User ", input$user_name, " login failed. ", e$message), name = "datimutils")
+        flog.info(paste0("User ", input$user_name, " login failed. ", e$message), name = "usgpartners")
       }
     )
     
@@ -302,9 +282,8 @@ server <- function(input, output, session) {
           user_input$d2_session$me$userCredentials$username,
           " logged in."
         ),
-        name = "datimutils"
+        name = "usgpartners"
       )
-      
       
       flog.info(
         paste0(
@@ -312,104 +291,12 @@ server <- function(input, output, session) {
           user_input$d2_session$me$userCredentials$username,
           " logged in."
         ),
-        name = "datimutils"
+        name = "usgpartners"
       )
     }
     
   })
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  # # Login process ----
-  # observeEvent(input$login_button, {
-  #   tryCatch({
-  #     datimutils::loginToDATIM(base_url = Sys.getenv("BASE_URL"),
-  #                              username = input$user_name,
-  #                              password = input$password,
-  #                              d2_session_envir = parent.env(environment())
-  #     )
-  #     
-  #     # DISALLOW USER ACCESS TO THE APP-----
-  #     
-  #     # store data so call is made only once
-  #     userGroups$streams <-  datimutils::getMyStreams()
-  #     user$type <- datimutils::getMyUserType()
-  #     mechanisms$my_cat_ops <- datimutils::listMechs()
-  #     
-  #     # if a user is not to be allowed deny them entry
-  #     if (!user$type %in% c(USG_USERS, PARTNER_USERS)) {
-  #       
-  #       # alert the user they cannot access the app
-  #       sendSweetAlert(
-  #         session,
-  #         title = "YOU CANNOT LOG IN",
-  #         text = "You are not authorized to use this application",
-  #         type = "error"
-  #       )
-  #       
-  #       # log them out
-  #       Sys.sleep(3)
-  #       flog.info(paste0("User ", user_input$d2_session$me$userCredentials$username, " logged out."))
-  #       user_input$authenticated  <-  FALSE
-  #       user_input$user_name <- ""
-  #       user_input$authorized  <-  FALSE
-  #       user_input$d2_session  <-  NULL
-  #       d2_default_session <- NULL
-  #       gc()
-  #       session$reload()
-  #       
-  #     }
-  #   },
-  #   # This function throws an error if the login is not successful
-  #   error = function(e) {
-  #     flog.info(paste0("User ", input$username, " login failed."), name = "datapack")
-  #   }
-  #   )
-  #   
-  #   if (exists("d2_default_session")) {
-  #     if (any(class(d2_default_session) == "d2Session")) {
-  #       user_input$authenticated  <-  TRUE
-  #       user_input$d2_session  <-  d2_default_session$clone()
-  #       d2_default_session <- NULL
-  #       
-  #       
-  #       # Need to check the user is a member of the PRIME Data Systems Group, COP Memo group, or a super user
-  #       user_input$memo_authorized  <-
-  #         grepl("VDEqY8YeCEk|ezh8nmc4JbX", user_input$d2_session$me$userGroups) |
-  #         grepl(
-  #           "jtzbVV4ZmdP",
-  #           user_input$d2_session$me$userCredentials$userRoles
-  #         )
-  #       flog.info(
-  #         paste0(
-  #           "User ",
-  #           user_input$d2_session$me$userCredentials$username,
-  #           " logged in."
-  #         ),
-  #         name = "datapack"
-  #       )
-  #     }
-  #   } else {
-  #     sendSweetAlert(
-  #       session,
-  #       title = "Login failed",
-  #       text = "Please check your username/password!",
-  #       type = "error"
-  #     )
-  #   }
-  # })
-  
-  
+
   # show user information ----
   observeEvent(input$me_button, {
     output$message <- renderPrint({ user$type })
