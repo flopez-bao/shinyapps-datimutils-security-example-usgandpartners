@@ -244,7 +244,39 @@ server <- function(input, output, session) {
                                     redirect_uri = APP_URL,
                                     scope = oauth_scope,
                                     d2_session_envir = parent.env(environment())
-      ) },
+      )
+      
+          # DISALLOW USER ACCESS TO THE APP-----
+
+          # store data so call is made only once
+          userGroups$streams <-  datimutils::getMyStreams()
+          user$type <- datimutils::getMyUserType()
+          mechanisms$my_cat_ops <- datimutils::listMechs()
+
+          # if a user is not to be allowed deny them entry
+          if (!user$type %in% c(USG_USERS, PARTNER_USERS)) {
+
+            # alert the user they cannot access the app
+            sendSweetAlert(
+              session,
+              title = "YOU CANNOT LOG IN",
+              text = "You are not authorized to use this application",
+              type = "error"
+            )
+
+            # log them out
+            Sys.sleep(3)
+            flog.info(paste0("User ", user_input$d2_session$me$userCredentials$username, " logged out."))
+            user_input$authenticated  <-  FALSE
+            user_input$user_name <- ""
+            user_input$authorized  <-  FALSE
+            user_input$d2_session  <-  NULL
+            d2_default_session <- NULL
+            gc()
+            session$reload()
+
+                }
+              },
       # This function throws an error if the login is not successful
       error = function(e) {
         flog.info(paste0("User ", input$user_name, " login failed. ", e$message), name = "datimutils")
